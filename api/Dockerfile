@@ -1,4 +1,4 @@
-FROM buildpack-deps:buster AS isolate
+FROM buildpack-deps:bookworm AS isolate
 RUN apt-get update && \
     apt-get install -y --no-install-recommends git libcap-dev && \
     rm -rf /var/lib/apt/lists/* && \
@@ -8,11 +8,23 @@ RUN apt-get update && \
     make -j$(nproc) install && \
     rm -rf /tmp/*
 
-FROM node:15.10.0-buster-slim
+FROM node:18-bookworm-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN dpkg-reconfigure -p critical dash
+
+# Install libssl1.1 from Bullseye for .NET 5.0 compatibility
+RUN apt-get update && \
+    apt-get install -y wget ca-certificates && \
+    ARCH=$(dpkg --print-architecture) && \
+    wget http://security.debian.org/debian-security/pool/updates/main/o/openssl/libssl1.1_1.1.1w-0+deb11u1_${ARCH}.deb && \
+    dpkg -i libssl1.1_1.1.1w-0+deb11u1_${ARCH}.deb && \
+    rm libssl1.1_1.1.1w-0+deb11u1_${ARCH}.deb && \
+    apt-get remove -y wget && \
+    apt-get autoremove -y && \
+    rm -rf /var/lib/apt/lists/*
+
 RUN apt-get update && \
     apt-get install -y libxml2 gnupg tar coreutils util-linux libc6-dev \
     binutils build-essential locales libpcre3-dev libevent-dev libgmp3-dev \

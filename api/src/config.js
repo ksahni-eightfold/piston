@@ -56,7 +56,7 @@ const options = {
     },
     output_max_size: {
         desc: 'Max size of each stdio buffer',
-        default: 1024,
+        default: 20971520, // 20MB (20 * 1024 * 1024 bytes)
         parser: parse_int,
         validators: [(x, raw) => !is_nan(x) || `${raw} is not a number`],
     },
@@ -86,7 +86,7 @@ const options = {
     },
     run_timeout: {
         desc: 'Max time allowed for run stage in milliseconds',
-        default: 3000, // 3 seconds
+        default: 10000, // 10 seconds
         parser: parse_int,
         validators: [(x, raw) => !is_nan(x) || `${raw} is not a number`],
     },
@@ -98,7 +98,7 @@ const options = {
     },
     run_cpu_time: {
         desc: 'Max CPU time allowed for run stage in milliseconds',
-        default: 3000, // 3 seconds
+        default: 10000, // 10 seconds
         parser: parse_int,
         validators: [(x, raw) => !is_nan(x) || `${raw} is not a number`],
     },

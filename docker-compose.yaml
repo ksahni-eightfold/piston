@@ -2,13 +2,32 @@ version: '3.2'
 
 services:
     api:
-        image: ghcr.io/engineer-man/piston
+        build: ./api
+        image: piston-custom:latest
         container_name: piston_api
         restart: always
         privileged: true
-        ports:
-            - 2000:2000
+        environment:
+            - PISTON_RUN_TIMEOUT=10000
+            - PISTON_COMPILE_TIMEOUT=10000
+            - PISTON_RUN_CPU_TIME=10000
+            - PISTON_COMPILE_CPU_TIME=10000
+            - PISTON_OUTPUT_MAX_SIZE=20971520
+        expose:
+            - "2000"
         volumes:
             - ./data/piston/packages:/piston/packages
         tmpfs:
             - /tmp:exec
+
+    piston-proxy:
+        image: nginx:alpine
+        container_name: piston-proxy
+        depends_on:
+            - api
+        # This is what ALB will hit: EC2 port 2000 → Nginx:80
+        ports:
+            - "2000:80"
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf:ro
+            - ./htpasswd:/etc/nginx/.htpasswd:ro

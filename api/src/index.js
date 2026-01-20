@@ -64,8 +64,8 @@ expressWs(app);
     logger.debug('Constructing Express App');
     logger.debug('Registering middleware');
 
-    app.use(body_parser.urlencoded({ extended: true }));
-    app.use(body_parser.json());
+    app.use(body_parser.urlencoded({ extended: true, limit: '50mb' }));
+    app.use(body_parser.json({ limit: '50mb' }));
 
     app.use((err, req, res, next) => {
         return res.status(400).send({
@@ -92,7 +92,7 @@ expressWs(app);
     const [address, port] = config.bind_address.split(':');
 
     const server = app.listen(port, address, () => {
-        logger.info('API server started on', config.bind_address);
+        logger.info('API server started on eightfold.ai:', config.bind_address);
     });
 
     process.on('SIGTERM', () => {

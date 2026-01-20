@@ -4,4 +4,6 @@
 mv $1 $1.java
 filename=$1.java
 shift
-java $filename "$@"
+javac -Xlint:none $filename
+classname=$(basename $filename .java)
+java $classname "$@"
